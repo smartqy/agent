@@ -1,0 +1,10 @@
+
+Example Query Neo4j of interest:
+
+MATCH (c:Campaign {id: 'campaign_3'})
+OPTIONAL MATCH (ad:Ad)-[r1:PART_OF]->(c)
+OPTIONAL MATCH (u:User)-[r2:CLICKED|VIEWED]->(ad)
+OPTIONAL MATCH (u)-[r3:BELONGS_TO]->(d)
+OPTIONAL MATCH (c)-[r4:TARGETS]->(d:Demographic)
+OPTIONAL MATCH (u)-[r5:BELONGS_TO]->(d)
+RETURN c, ad, r1, u, r2, d, r3, r4, r5

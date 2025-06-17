@@ -1,0 +1,10 @@
+langchain
+langchain-openai
+python-dotenv
+streamlit
+neo4j
+IPython
+langchain_google_genai
+pillow
+langchain-community
+langchain-neo4j

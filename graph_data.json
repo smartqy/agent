@@ -1,0 +1,66 @@
+{
+  "nodes": [
+    {
+      "id": "user_1",
+      "type": "User",
+      "properties": { "name": "Alice", "age": 25, "gender": "female" }
+    },
+    {
+      "id": "user_2",
+      "type": "User",
+      "properties": { "name": "Bob", "age": 30, "gender": "male" }
+    },
+    {
+      "id": "ad_1",
+      "type": "Ad",
+      "properties": { "title": "Summer Sale", "budget": 1000 }
+    },
+    {
+      "id": "ad_2",
+      "type": "Ad",
+      "properties": { "title": "New Product", "budget": 2000 }
+    },
+    {
+      "id": "product_1",
+      "type": "Product",
+      "properties": { "name": "Laptop", "price": 999 }
+    },
+    {
+      "id": "product_2",
+      "type": "Product",
+      "properties": { "name": "Smartphone", "price": 499 }
+    },
+    {
+      "id": "campaign_1",
+      "type": "Campaign",
+      "properties": { "name": "Tech Campaign", "start_date": "2023-01-01" }
+    },
+    {
+      "id": "campaign_2",
+      "type": "Campaign",
+      "properties": { "name": "Fashion Campaign", "start_date": "2023-02-01" }
+    },
+    {
+      "id": "demo_1",
+      "type": "Demographic",
+      "properties": { "age_range": "18-25", "gender": "female" }
+    },
+    {
+      "id": "demo_2",
+      "type": "Demographic",
+      "properties": { "age_range": "26-35", "gender": "male" }
+    }
+  ],
+  "relationships": [
+    { "source": "user_1", "target": "ad_1", "type": "VIEWED" },
+    { "source": "user_1", "target": "ad_2", "type": "CLICKED" },
+    { "source": "user_2", "target": "ad_1", "type": "CLICKED" },
+    { "source": "user_2", "target": "product_1", "type": "CONVERTED" },
+    { "source": "ad_1", "target": "campaign_1", "type": "PART_OF" },
+    { "source": "ad_2", "target": "campaign_2", "type": "PART_OF" },
+    { "source": "campaign_1", "target": "demo_1", "type": "TARGETS" },
+    { "source": "campaign_2", "target": "demo_2", "type": "TARGETS" },
+    { "source": "user_1", "target": "demo_1", "type": "BELONGS_TO" },
+    { "source": "user_2", "target": "demo_2", "type": "BELONGS_TO" }
+  ]
+}

@@ -1,0 +1,19 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+
+# 环境配置
+.env
+.env_loader
+
+# 虚拟环境
+venv/
+
+# 本地开发环境
+*.log
+*.DS_Store
+
+# VSCode 配置（如果不共享）
+.vscode/
+
+config/data/
