@@ -42,7 +42,7 @@ async def render_marketing_analysis():
         st.session_state.agent = init_agent()
 
     # ✅ 提问提示
-    with st.expander("📘 提问提示", expanded=True):
+    with st.expander("📘 提问提示", expanded=False):
         st.markdown("""
 - ✅ **支持的问题示例**：
     - 哪些用户点击了广告 A？
@@ -86,22 +86,64 @@ async def render_marketing_analysis():
         else:
             st.warning("⚠️ 请输入有效的分析需求。")
 
-    # ✅ 显示对话历史
-    with st.expander("💬 对话历史"):
-        for msg in st.session_state.agent.agent_executor.memory.chat_memory.messages:
-            st.write(f"**{msg.type.title()}**: {msg.content}")
-    
+    # ✅ 显示 Memory 中的对话历史（调试）
+    # with st.expander("💬 对话历史"):
+    #     for msg in st.session_state.agent.agent_executor.memory.chat_memory.messages:
+    #         st.write(f"**{msg.type.title()}**: {msg.content}")
+
     with st.expander("🧠 当前记忆内容（调试用）"):
         for msg in st.session_state.agent.agent_executor.memory.chat_memory.messages:
             st.markdown(f"**{msg.type.title()}**: {msg.content}")
 
+def render_chat_history():
+    st.header("💬 查询历史")
+    if "agent" in st.session_state:
+        messages = st.session_state.agent.agent_executor.memory.chat_memory.messages
+        if not messages:
+            st.info("暂无历史记录。")
+            return
+
+        # 成对显示 Human-AI 对话
+        for i in range(0, len(messages), 2):
+            user_msg = messages[i]
+            ai_msg = messages[i+1] if i+1 < len(messages) else None
+            st.markdown(f"**🧑 用户：** {user_msg.content}")
+            if ai_msg:
+                st.markdown(f"**🤖 AI：** {ai_msg.content}")
+            st.markdown("---")
+    else:
+        st.info("No tool usage records yet. Please ask a question in Marketing Analysis first.")
+
+
+def render_tool_debug():
+    st.header("🧪 工具调用调试")
+    if "agent" in st.session_state:
+        try:
+            result = st.session_state.agent.last_result  # 假设你在 analyze() 函数中保存了最后一次返回结果
+            st.markdown("### 🔧 工具调用过程")
+            for step in result["intermediate_steps"]:
+                st.markdown(f"**工具：** `{step[0].tool}`")
+                st.markdown(f"**输入：** `{step[0].tool_input}`")
+                st.markdown(f"**输出：**\n```\n{step[1]}\n```")
+                st.markdown("---")
+        except Exception:
+            st.info("No tool usage records yet. Please ask a question in Marketing Analysis first.")
+    else:
+        st.info("Agent 尚未初始化。")
+
 def main():
     # 创建侧边栏导航
     st.sidebar.title("功能导航")
-    page = st.sidebar.radio("选择功能", ["数据加载", "营销分析"])
+    page = st.sidebar.radio("选择功能", ["数据加载", "营销分析", "查询历史", "工具调试"])
     
     if page == "数据加载":
         render_data_loader()
+    elif page == "营销分析":
+        asyncio.run(render_marketing_analysis())
+    elif page == "查询历史":
+        render_chat_history()
+    elif page == "工具调试":
+        render_tool_debug()
     else:
         asyncio.run(render_marketing_analysis())
 

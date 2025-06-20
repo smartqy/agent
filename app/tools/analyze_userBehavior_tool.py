@@ -25,4 +25,4 @@ class AnalyzeUserBehaviorTool(BaseTool):
         }
 
     async def _arun(self, user_id: str) -> Dict[str, Any]:
-        return self._run(user_id) 
+        return self._run(user_id)

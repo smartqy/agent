@@ -12,7 +12,7 @@ class AnalyzeCampaignTool(BaseTool):
         # Query Neo4j for campaign data
         query = """
         MATCH (c:Campaign {id: $campaign_id})
-        RETURN c
+        RETURN c, (c.revenue - c.budget) / c.budget AS roi
         """
         result = self.neo4j_graph.query(query, params={"campaign_id": campaign_id})
         if not result:
@@ -20,9 +20,10 @@ class AnalyzeCampaignTool(BaseTool):
         campaign_data = result[0]
         return {
             "campaign_id": campaign_id,
-            "performance": campaign_data.get("performance", "Unknown"),
-            "roi": campaign_data.get("roi", 0.0),
-            "recommendations": campaign_data.get("recommendations", "No recommendations available.")
+            "name": campaign_data["c"].get("name", "Unknown"),
+            "budget": campaign_data["c"].get("budget", 0.0),
+            "revenue": campaign_data["c"].get("revenue", 0.0),
+            "roi": campaign_data.get("roi", 0.0)
         }
 
     async def _arun(self, campaign_id: str) -> Dict[str, Any]:

@@ -8,6 +8,7 @@ from tools.analyze_userBehavior_tool import AnalyzeUserBehaviorTool
 from tools.graph_query_tool import GraphQueryTool
 from langchain.memory import ConversationBufferMemory
 from tools.fallback_tool import FallbackTool
+from tools.schema_tool import SchemaTool
 # Load environment variables
 
 load_dotenv("config/.env_loader")
@@ -47,7 +48,8 @@ def init_agent():
         AnalyzeCampaignTool(neo4j_graph=graph), 
         AnalyzeUserBehaviorTool(neo4j_graph=graph),
         GraphQueryTool(neo4j_graph=graph),
-        FallbackTool(llm=llm, memory=memory)
+        FallbackTool(llm=llm, memory=memory),
+        SchemaTool(neo4j_graph=graph)
     ]
 
     
