@@ -1,55 +1,37 @@
-# Marketing Analytics Agent Project
+# 🧠 Marketing Analytics Agent
 
-This project implements a marketing analytics agent using LangChain and OpenAI's GPT-4 to analyze campaign and user behavior data. The agent uses a graph database (Neo4j) to store and query data.
+一个基于 [LangChain](https://github.com/langchain-ai/langchain) 和 [Neo4j](https://neo4j.com/) 的智能 Agent，用于通过自然语言进行营销数据分析。
 
-## Project Structure
+## 📌 项目简介
 
-- `app/agent.py`: The core agent class that processes user queries.
-- `app/tools.py`: Defines the tools used by the agent for analysis.
-- `app/data_loader.py`: Loads and inserts data into Neo4j.
-- `app/main.py`: Demonstrates how to run the agent.
-- `ui/streamlit_app.py`: A Streamlit app for data loading and visualization.
-- `config/.env_loader`: Environment variables for Neo4j and OpenAI API.
-- `data/dummy_graph_data.json`: Mock graph data for testing.
-- `requirements.txt`: Lists all project dependencies.
+本系统构建了一个上下文感知、工具驱动的智能分析代理（Agent），可执行以下操作：
 
-## Setup Instructions
+- 📊 广告活动分析（ROI、点击、转化等）
+- 🧍‍♂️ 用户行为分析（浏览、点击、转化等）
+- 🔍 图数据库查询（Cypher）
+- 🧠 数据模型展示（节点、属性、关系）
+- 💬 闲聊支持（非分析类问题）
 
-1. **Install Dependencies**
+## 🔧 核心模块
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+### `MarketingAnalyticsAgent`
 
-2. **Set Environment Variables**
+封装了分析逻辑的核心类，支持同步和异步查询：
 
-   Create a `.env_loader` file in the `config` directory with the following content:
+```python
+agent = MarketingAnalyticsAgent(tools=[...], llm=..., memory=...)
+agent.analyze_sync("How did Campaign Alpha perform?")
 
-   ```
-   NEO4J_URI=bolt://localhost:7687
-   NEO4J_USERNAME=neo4j
-   NEO4J_PASSWORD=your-password
-   OPENAI_API_KEY=your-api-key
-   ```
-
-3. **Run the Agent**
-
-   ```bash
-   python app/main.py
-   ```
-
-4. **Run the Streamlit App**
-
-   ```bash
-   streamlit run ui/streamlit_app.py
-   ```
-
-## Example Usage
-
-The agent is configured to analyze campaign and user behavior data. You can modify the query in `app/main.py` to test different analysis requests.
-
-## Next Steps
-
-- Integrate with a real graph database (e.g., Neo4j).
-- Implement more advanced querying and analysis features.
-- Add a web interface for interactive queries.
+marketing-agent/
+│
+├── agent.py                 # 主 Agent 类
+├── tools/
+│   ├── campaign_tool.py
+│   ├── user_tool.py
+│   ├── graph_tool.py
+│   ├── schema_tool.py
+│   └── fallback_tool.py
+├── app.py                   # CLI 或 Streamlit 界面（可选）
+├── requirements.txt
+└── README.md
+```

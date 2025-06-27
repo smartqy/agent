@@ -6,10 +6,10 @@ import sys
 import os
 
 
-# ✅ Streamlit 页面配置必须在最前面
-st.set_page_config(page_title="营销分析智能代理系统", layout="centered")
+#  Streamlit page config must be at the top
+st.set_page_config(page_title="Marketing Analytics Agent System", layout="centered")
 
-# 添加项目根目录到 Python 路径
+# Add project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data_loader import load_data, insert_data, load_graph
@@ -34,115 +34,162 @@ def render_data_loader():
                 st.error(f"Error: {e}", icon="🚨")
 
 async def render_marketing_analysis():
-    st.markdown("<h1 style='text-align: center;'>📊 营销分析智能代理系统</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center;'>基于 Neo4j 图数据库的营销活动分析助手</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'>📊 Marketing Analytics Agent System</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>A marketing campaign analysis assistant based on Neo4j graph database</p>", unsafe_allow_html=True)
 
-    # 初始化 Agent
+    # Initialize Agent
     if "agent" not in st.session_state:
         st.session_state.agent = init_agent()
 
-    # ✅ 提问提示
-    with st.expander("📘 提问提示", expanded=False):
+    # Question hints
+    with st.expander("📘 Question Hints", expanded=False):
         st.markdown("""
-- ✅ **支持的问题示例**：
-    - 哪些用户点击了广告 A？
-    - 活动 C 的 ROI 表现如何？
-    - 用户 user_12 最近有哪些行为？
-- ❌ **不支持的问题示例**：
-    - 我是谁？
-    - 今天天气怎么样？
-    - 你爱我吗？
-        """)
+### 📈 Campaign Analysis
+- What is the performance of campaign_12?
+- What’s the ROI of campaign 'Back to School'?
+- Which campaign had the best ROI?
+- How many ads were linked to campaign Black Friday?
 
-    # ✅ 显示可用工具
-    with st.expander("🛠️ 可用分析工具"):
+### 🎯 Demographic Targeting
+- Who did the ‘Summer Sale’ campaign target?
+- What gender and age group was campaign Holiday Deals aimed at?
+
+### 📢 Ad Engagement
+- How many ads were created in campaign_01?
+- What’s the total number of ad views and clicks for campaign C?
+
+### 🛍️ Product Conversion
+- How many products were converted via campaign_08?
+- What is the total conversion value of 'Spring Promo'?
+
+---
+
+### 👤 User Profile
+- Who is user Christopher Cross?
+- Tell me about user Alice.
+- Where is user Bob from? How old is he?
+
+### 👁️ Viewing Behavior
+- How many ads has Lisa seen?
+- Which ads did James view?
+
+### 🖱️ Clicking Behavior
+- How many ads did user_12 click?
+- What’s the total click count for Tom?
+
+### 💰 Conversion Behavior
+- Did Sarah convert any product?
+- How much value did user_23 generate?
+
+### 🧾 User Summary
+- Summarize user Emma’s behavior.
+- What did Bob do across ads and products?
+
+---
+
+### 🧪 Technical (Cypher Queries)
+- MATCH (u:User) WHERE u.age > 30 RETURN u.name
+- Show me all relationships involving Product
+- List all users who clicked an ad
+
+---
+
+### 🧬 Schema Inspection
+- What labels exist in this graph?
+- Show all relationship types in the database.
+- What properties do Campaign nodes have?
+""")
+
+
+    # Show available tools
+    with st.expander("🛠️ Available Analysis Tools"):
         tools = st.session_state.agent.get_available_tools()
         for tool in tools:
             st.markdown(f"- `{tool}`")
 
-    # ✅ 用户输入框
-    user_input = st.text_area("✍️ 请输入您的分析需求：", height=100, placeholder="例如：用户 user_23 最近点击了哪些广告？")
+    # User input box
+    user_input = st.text_area("✍️ Please enter your analysis request:", height=100, placeholder="e.g.: What ads did user_23 click recently?")
 
-    # ✅ 分析按钮
-    if st.button("🔍 分析", type="primary"):
+    # Analyze button
+    if st.button("🔍 Analyze", type="primary"):
         if user_input.strip():
-            with st.spinner("正在分析，请稍候..."):
+            with st.spinner("Analyzing, please wait..."):
                 try:
                     result = await st.session_state.agent.analyze(query=user_input)
 
-                    # ✅ 分析结果
-                    st.markdown("### ✅ 分析结果")
+                    # Analysis result
+                    st.markdown("### ✅ Analysis Result")
                     st.write(result["analysis"])
 
-                    # ✅ 中间步骤
-                    with st.expander("📂 查看分析过程"):
+                    # Intermediate steps
+                    with st.expander("📂 View Analysis Steps"):
                         for step in result["intermediate_steps"]:
-                            st.markdown(f"**工具：** `{step[0].tool}`")
-                            st.markdown(f"**输入：** `{step[0].tool_input}`")
-                            st.markdown(f"**输出：**\n```\n{step[1]}\n```")
+                            st.markdown(f"**Tool:** `{step[0].tool}`")
+                            st.markdown(f"**Input:** `{step[0].tool_input}`")
+                            st.markdown(f"**Output:**\n```{step[1]}\n```")
                             st.markdown("---")
                 except Exception as e:
-                    st.error(f"发生错误：{str(e)}")
+                    st.error(f"Error: {str(e)}")
         else:
-            st.warning("⚠️ 请输入有效的分析需求。")
+            st.warning("⚠️ Please enter a valid analysis request.")
 
-    # ✅ 显示 Memory 中的对话历史（调试）
-    # with st.expander("💬 对话历史"):
+    # ✅ Show memory content (for debugging)
+    # with st.expander("💬 Chat History"):
     #     for msg in st.session_state.agent.agent_executor.memory.chat_memory.messages:
     #         st.write(f"**{msg.type.title()}**: {msg.content}")
 
-    with st.expander("🧠 当前记忆内容（调试用）"):
+    with st.expander("🧠 Current Memory Content (Debug)"):
         for msg in st.session_state.agent.agent_executor.memory.chat_memory.messages:
             st.markdown(f"**{msg.type.title()}**: {msg.content}")
 
 def render_chat_history():
-    st.header("💬 查询历史")
+    st.header("💬 Query History")
     if "agent" in st.session_state:
         messages = st.session_state.agent.agent_executor.memory.chat_memory.messages
         if not messages:
-            st.info("暂无历史记录。")
+            st.info("No history records.")
             return
 
-        # 成对显示 Human-AI 对话
+        # Show Human-AI pairs
         for i in range(0, len(messages), 2):
             user_msg = messages[i]
             ai_msg = messages[i+1] if i+1 < len(messages) else None
-            st.markdown(f"**🧑 用户：** {user_msg.content}")
+            st.markdown(f"**🧑 User:** {user_msg.content}")
             if ai_msg:
-                st.markdown(f"**🤖 AI：** {ai_msg.content}")
+                st.markdown(f"**🤖 AI:** {ai_msg.content}")
             st.markdown("---")
     else:
         st.info("No tool usage records yet. Please ask a question in Marketing Analysis first.")
 
 
 def render_tool_debug():
-    st.header("🧪 工具调用调试")
+    st.header("🧪 Tool Call Debug")
     if "agent" in st.session_state:
         try:
-            result = st.session_state.agent.last_result  # 假设你在 analyze() 函数中保存了最后一次返回结果
-            st.markdown("### 🔧 工具调用过程")
+            result = st.session_state.agent.last_result  # Assume you save the last result in analyze()
+            st.markdown("### 🔧 Tool Call Process")
             for step in result["intermediate_steps"]:
-                st.markdown(f"**工具：** `{step[0].tool}`")
-                st.markdown(f"**输入：** `{step[0].tool_input}`")
-                st.markdown(f"**输出：**\n```\n{step[1]}\n```")
+                st.markdown(f"**Tool:** `{step[0].tool}`")
+                st.markdown(f"**Input:** `{step[0].tool_input}`")
+                st.markdown(f"**Output:**\n```{step[1]}\n```")
                 st.markdown("---")
         except Exception:
             st.info("No tool usage records yet. Please ask a question in Marketing Analysis first.")
     else:
-        st.info("Agent 尚未初始化。")
+        st.info("Agent is not initialized.")
 
 def main():
-    # 创建侧边栏导航
-    st.sidebar.title("功能导航")
-    page = st.sidebar.radio("选择功能", ["数据加载", "营销分析", "查询历史", "工具调试"])
+    # Create sidebar navigation
+    st.sidebar.title("Function Navigation")
+    page = st.sidebar.radio("Select Function", ["Data Loader", "Marketing Analysis", "Query History", "Tool Debug"])
     
-    if page == "数据加载":
+    if page == "Data Loader":
         render_data_loader()
-    elif page == "营销分析":
+    elif page == "Marketing Analysis":
         asyncio.run(render_marketing_analysis())
-    elif page == "查询历史":
+    elif page == "Query History":
         render_chat_history()
-    elif page == "工具调试":
+    elif page == "Tool Debug":
         render_tool_debug()
     else:
         asyncio.run(render_marketing_analysis())

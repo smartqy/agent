@@ -6,26 +6,33 @@ from pydantic import Field
 class GraphQueryTool(BaseTool):
     name: str = "graph_query"
     description: str = (
-        "用于查询 Neo4j 图数据库中的营销活动数据。"
-        "输入应为 Cypher 查询语句（不带反引号），如：MATCH (n) RETURN n LIMIT 10。"
-        "适用于查询节点、关系、属性，或执行聚合分析。"
+    "Execute Cypher queries against the Neo4j graph database that stores marketing-related data.\n\n"
+    "-Input format: a valid Cypher query string (without backticks).\n"
+    "   For example: MATCH (n) RETURN n LIMIT 10\n\n"
+    "- Supported operations:\n"
+    "- Retrieve nodes, relationships, or properties\n"
+    "- Filter entities based on attributes (e.g., age > 30)\n"
+    "- Perform graph pattern matching (e.g., campaigns → users)\n"
+    "- Execute aggregations, counts, groupings, etc.\n\n"
+    "-Ensure that your query uses correct Cypher syntax.\n"
+    "This tool is ideal when the user explicitly asks a technical query involving structure or data from the graph."
     )
 
-    neo4j_graph: Neo4jGraph = Field(..., description="连接到的 Neo4j 图数据库实例")
+    neo4j_graph: Neo4jGraph = Field(..., description="Connected Neo4j graph database instance")
 
     def _run(self, query: str) -> str:
         try:
             result = self.neo4j_graph.query(query)
             return self._format_output(result)
         except Exception as e:
-            return f"查询执行失败: {str(e)}"
+            return f"Query execution failed: {str(e)}"
 
     async def _arun(self, query: str) -> str:
         return self._run(query)
 
     def _format_output(self, result: List[Dict[str, Any]]) -> str:
         if not result:
-            return "查询未返回任何结果。"
+            return "No results returned from the query."
 
         formatted_result = []
         for row in result:
@@ -47,8 +54,8 @@ class GraphQueryTool(BaseTool):
             formatted_result.append(" | ".join(row_str))
         return "\n".join(formatted_result)
 
-    def get_schema(self) -> str:
-        """返回图数据库的节点标签、关系类型及节点属性结构。"""
+   
+        """Return the node labels, relationship types, and node property structure of the graph database."""
         try:
             node_labels = self.neo4j_graph.query("""
                 CALL db.labels()
@@ -69,10 +76,10 @@ class GraphQueryTool(BaseTool):
             """)[0]["value"]
 
             lines = [
-                "📦 图数据库结构",
-                f"🏷️ 节点标签：{', '.join(node_labels)}",
-                f"🔗 关系类型：{', '.join(rel_types)}",
-                f"🔍 节点属性："
+                "Graph Database Schema",
+                f" Node Labels: {', '.join(node_labels)}",
+                f" Relationship Types: {', '.join(rel_types)}",
+                f" Node Properties:"
             ]
 
             for label, props in node_props.items():
@@ -83,4 +90,4 @@ class GraphQueryTool(BaseTool):
             return "\n".join(lines)
 
         except Exception as e:
-            return f"❌ 获取数据库结构失败: {str(e)}"
+            return f"❌ Failed to get database schema: {str(e)}"
